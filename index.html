@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#05060d" />
+<title>星屑成诗 · 生日快乐</title>
+<meta name="description" content="一份由星屑、烛光与回忆组成的生日贺卡。拖动旋转星轨，点亮烛火，吹灭它，收下这一小片宇宙。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305060d'/%3E%3Cpath d='M32 8l4.6 19.4L56 32l-19.4 4.6L32 56l-4.6-19.4L8 32l19.4-4.6z' fill='%23f6e3b6'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body data-phase="landing">
+
+<canvas id="bgScene" aria-hidden="true"></canvas>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="interact" class="interact" aria-hidden="true"></div>
+<div class="ambient" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="./" aria-label="星屑成诗">
+    <span class="brand-star">✦</span>
+    <span class="brand-text">
+      <b>星屑成诗</b>
+      <small>STARDUST · BIRTHDAY</small>
+    </span>
+  </a>
+  <p class="quote"><i></i><span>a little universe for you</span><i></i></p>
+  <div class="tools">
+    <button id="soundBtn" class="icon-btn" type="button" aria-label="开启或关闭声音" title="声音">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.2L12 18V6L7.2 9.5H4Z"/><path class="wave" d="M15.2 9.1a4.2 4.2 0 0 1 0 5.8M17.8 6.6a7.7 7.7 0 0 1 0 10.8"/></svg>
+    </button>
+    <button id="fullBtn" class="icon-btn" type="button" aria-label="全屏" title="全屏">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/></svg>
+    </button>
+    <button id="setBtn" class="icon-btn" type="button" aria-label="定制这份贺卡" title="定制">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section id="chapter" class="chapter" aria-live="polite">
+    <p class="kicker"><span id="chapterNo">CHAPTER II</span> <em>·</em> <span id="chapterTag">许愿</span></p>
+    <h2 id="chapterTitle">把愿望<br />放进蛋糕</h2>
+    <p class="chapter-desc" id="chapterDesc">拖动旋转星轨，点击照片打开回忆。<br />轻点烛火，再把它们吹灭。</p>
+    <ol class="steps" id="steps">
+      <li class="on"><i>01</i><span>点亮烛光</span></li>
+      <li><i>02</i><span>吹灭许愿</span></li>
+      <li><i>03</i><span>收下星屑</span></li>
+      <li><i>04</i><span>打开回忆</span></li>
+    </ol>
+  </section>
+
+  <div id="hintChip" class="hint-chip">拖动旋转 · 正面照片可点 · 点亮烛火</div>
+
+  <div id="cardsBack" class="cards cards-back" aria-hidden="true"></div>
+  <div id="cardsFront" class="cards cards-front" aria-label="回忆星轨"></div>
+
+  <div id="tip" class="tip">
+    <div class="tip-orb"><span></span></div>
+    <div class="tip-body">
+      <p class="tip-kicker" id="tipKicker">SECOND HAND · WISH</p>
+      <h4 id="tipTitle">烛光还没有点亮</h4>
+      <p id="tipText">轻点蛋糕上的烛芯，或按下方的按钮，让第一束光落下来。</p>
+    </div>
+    <span class="tip-meta" id="tipMeta">点击 · 点亮</span>
+  </div>
+
+  <div class="dock" id="dock">
+    <button id="wishBtn" class="btn-primary" type="button">
+      <span class="btn-spark">✦</span>
+      <span id="wishBtnText">点亮烛光</span>
+    </button>
+    <button id="editBtn" class="btn-ghost" type="button">写祝福</button>
+  </div>
+
+  <section id="wishUI" class="wish-ui" aria-live="polite">
+    <div class="wish-to">TO <b id="wishName">最可爱的你</b></div>
+    <p class="wish-line" id="wishLine">愿你岁岁欢愉，万事胜意</p>
+    <div id="blessings" class="blessings"></div>
+  </section>
+
+  <div id="countdownLabel" class="countdown-label" aria-hidden="true">正在收集星屑</div>
+</main>
+
+<div id="landing" class="landing">
+  <div class="landing-glow" aria-hidden="true"></div>
+  <div class="landing-inner">
+    <div class="landing-mark">✦</div>
+    <p class="eyebrow">STARDUST · BIRTHDAY</p>
+    <h1>星屑成诗</h1>
+    <p class="landing-sub">a little universe for you</p>
+    <p class="landing-copy">把愿望交给星屑，把今天留给光。</p>
+    <button id="enter" class="btn-primary btn-enter" type="button">
+      <span>开启这份小小宇宙</span><i>→</i>
+    </button>
+    <p class="landing-note">建议开启声音 · 支持手机与桌面</p>
+  </div>
+  <p class="landing-foot">✦ 每一粒星屑，都在替我记得你 ✦</p>
+</div>
+
+<div id="scrim" class="scrim"></div>
+
+<aside id="settings" class="drawer" aria-hidden="true" aria-label="定制生日贺卡">
+  <div class="drawer-head">
+    <div>
+      <p class="kicker"><span>MAKE IT YOURS</span></p>
+      <h3>写下你的星屑</h3>
+    </div>
+    <button id="closeSet" class="icon-btn" type="button" aria-label="关闭">✕</button>
+  </div>
+  <div class="drawer-body">
+    <label class="field">
+      <span>寿星的名字</span>
+      <input id="inName" type="text" maxlength="12" placeholder="最可爱的你" />
+    </label>
+    <label class="field">
+      <span>想对 TA 说的话</span>
+      <textarea id="inWish" rows="2" maxlength="40" placeholder="愿你岁岁欢愉，万事胜意"></textarea>
+    </label>
+    <label class="field">
+      <span>粒子大标题 <small>2–6 个字</small></span>
+      <input id="inTitle" type="text" maxlength="6" placeholder="生日快乐" />
+    </label>
+
+    <fieldset class="field">
+      <legend>主题形状</legend>
+      <div class="seg" id="themeSeg">
+        <button type="button" data-theme="cake" class="on"><i>🎂</i>蛋糕</button>
+        <button type="button" data-theme="heart"><i>♥</i>爱心</button>
+        <button type="button" data-theme="star"><i>✦</i>星辰</button>
+        <button type="button" data-theme="moon"><i>☾</i>月亮</button>
+      </div>
+    </fieldset>
+
+    <fieldset class="field">
+      <legend>星屑配色</legend>
+      <div class="swatches" id="paletteSeg">
+        <button type="button" data-palette="violet" class="on" title="紫夜"><i></i><span>紫夜</span></button>
+        <button type="button" data-palette="gold" title="香槟"><i></i><span>香槟</span></button>
+        <button type="button" data-palette="rose" title="玫瑰"><i></i><span>玫瑰</span></button>
+        <button type="button" data-palette="aurora" title="极光"><i></i><span>极光</span></button>
+      </div>
+    </fieldset>
+
+    <label class="switch">
+      <input id="inMusic" type="checkbox" checked />
+      <span class="track"><i></i></span>
+      <span>背景音乐</span>
+    </label>
+    <label class="switch">
+      <input id="inMic" type="checkbox" />
+      <span class="track"><i></i></span>
+      <span>用麦克风吹蜡烛 <small>实验</small></span>
+    </label>
+
+    <div class="drawer-actions">
+      <button id="saveSet" class="btn-primary" type="button">收进星屑</button>
+      <button id="resetSet" class="btn-ghost" type="button">恢复默认</button>
+    </div>
+    <p class="drawer-note">修改只保存在这台设备。也可以分享网址参数：<code>?name=小满&amp;wish=生日快乐</code></p>
+  </div>
+</aside>
+
+<div id="lightbox" class="lightbox" aria-hidden="true">
+  <div class="lb-stars" aria-hidden="true"></div>
+  <button id="lbClose" class="lb-close" type="button" aria-label="关闭">✕</button>
+  <button id="lbPrev" class="lb-nav lb-prev" type="button" aria-label="上一张">‹</button>
+  <button id="lbNext" class="lb-nav lb-next" type="button" aria-label="下一张">›</button>
+  <figure>
+    <div class="lb-frame">
+      <div id="lbMedia" class="lb-media"></div>
+    </div>
+    <figcaption>
+      <p class="lb-kicker"><span id="lbCount">01</span> / <span id="lbTotal">06</span> · MEMORY</p>
+      <b id="lbTitle"></b>
+      <span id="lbCap"></span>
+      <p class="lb-hint">← → / 左右滑动 切换 · 点击空白处关闭</p>
+    </figcaption>
+  </figure>
+</div>
+
+<div id="flash" class="flash" aria-hidden="true"></div>
+<div id="toast" class="toast" role="status"></div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
